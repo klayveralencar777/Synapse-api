@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { ReturningResultsEntityUpdator } from "typeorm/query-builder/ReturningResultsEntityUpdator.js";
 import { User } from "./user.entity";
-import { CreateUserDTO } from "./dto/create-user.dto";
+import type { CreateUserDTO } from "./dto/create-user.dto";
+import { ChangePasswordDTO } from "./dto/change-password.dto";
+import { UpdateUserDTO } from "./dto/update-user.dto";
 
 
 
@@ -31,8 +32,14 @@ export class UserController {
     }
 
     @Put(':id')
-    async update(@Param('id') id: number, @Body() request: User) {
-        return this.service.update(Number(id), request);
+    async update(@Param('id') id: number, @Body() dto: UpdateUserDTO) {
+        return this.service.update(Number(id), dto);
+    }
+
+    @Patch(':id/change-password')
+    async changePassword(@Param('id') id: number, @Body() dto: ChangePasswordDTO) {
+        return this.service.changePassword(Number(id), dto);
+        
     }
 
     @Delete(':id')

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/User/user.module';
+import { AuthModule } from './modules/Auth/auth.module';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { UserModule } from './modules/User/user.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-    }), UserModule
+    }), UserModule, AuthModule
   ]
  
 })

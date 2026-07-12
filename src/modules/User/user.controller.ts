@@ -1,11 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Req, Request, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { User } from "./user.entity";
-import type { CreateUserDTO } from "./dto/create-user.dto";
+import  { CreateUserDTO } from "./dto/create-user.dto";
 import { ChangePasswordDTO } from "./dto/change-password.dto";
 import { UpdateUserDTO } from "./dto/update-user.dto";
+import { JwtAuthGuard } from "../Auth/guards/jwt-auth.guard";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
 
-
+interface JwtUser {
+    id: number;
+    name: string;
+    email: string
+}
 
 @Controller('users')
 export class UserController {
@@ -16,35 +21,43 @@ export class UserController {
 
 
     @Get()
-    async findAll() {
+    findAll() {
         return this.service.findAll();
         
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
-        return await this.service.findById(Number(id));
+    findById(@Param('id') id: string) {
+        return  this.service.findById(Number(id));
     }
 
     @Post()
-    async create(@Body() dto: CreateUserDTO) {
+    create(@Body() dto: CreateUserDTO) {
         return this.service.save(dto);
     }
 
-    @Put(':id')
-    async update(@Param('id') id: number, @Body() dto: UpdateUserDTO) {
-        return this.service.update(Number(id), dto);
+    @UseGuards(JwtAuthGuard)
+    @Patch('me')
+    update(
+        @CurrentUser() user: JwtUser, 
+        @Body() dto: UpdateUserDTO
+    ) {
+        return this.service.update(user.id, dto);
     }
 
-    @Patch(':id/change-password')
-    async changePassword(@Param('id') id: number, @Body() dto: ChangePasswordDTO) {
-        return this.service.changePassword(Number(id), dto);
+    @UseGuards(JwtAuthGuard)
+    @Patch('change-password')
+    changePassword(
+        @CurrentUser() user: JwtUser, 
+        @Body() dto: ChangePasswordDTO
+    ) {
+        return this.service.changePassword(user.id, dto);
         
     }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
-    async delete(@Param('id') id: number) {
+    delete(@Param('id') id: number) {
         this.service.delete(Number(id));
     }
 }

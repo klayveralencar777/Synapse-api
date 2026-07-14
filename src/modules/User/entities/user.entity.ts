@@ -1,5 +1,6 @@
 
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { UserStatus } from "../enums/user.enum";
 
 
 @Entity('users')
@@ -15,5 +16,20 @@ export class User{
 
     @Column()
     password!: string;
+
+    @Column({ length: 11, unique: true})
+    cpf!: string;
+
+    @Column({ 
+        enum : UserStatus, 
+        default: UserStatus.ACTIVE
+    })
+    status: UserStatus
+  
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
 
 }

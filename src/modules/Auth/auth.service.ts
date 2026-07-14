@@ -21,19 +21,18 @@ export class AuthService {
 
     async login(dto: LoginRequestDTO) {
         const user = await this.service.findByEmail(dto.email);
-       
+        if(user.status === 'inactive') {
+            throw new UnauthorizedException('usuário inativo.');
+        }
         const checkPassword = await bcrypt.compare(dto.password, user.password);
-
         if(!checkPassword) {
             throw new UnauthorizedException('Credenciais inválidas');
         }
-
         const payload = {
             sub: user.id,
             email: user.email,
             name: user.name,
         }
-
         return {
             access_token: await this.jwtService.signAsync(payload),
             user: {
@@ -41,7 +40,6 @@ export class AuthService {
                 name: user.name,
                 email: user.email,
             }
-
         }
     }
 }

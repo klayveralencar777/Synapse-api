@@ -1,4 +1,6 @@
+import { execSync } from "child_process";
 import { Expose } from "class-transformer";
+import { UserStatus } from "../enums/user.enum";
 
 export class UserResponseDTO {
     @Expose()
@@ -9,4 +11,16 @@ export class UserResponseDTO {
 
     @Expose()
     email!: string;
+
+    @Expose()
+    cpf!: string;
+
+    @Expose()
+    createdAt: Date;
+
+    @Expose()
+    updatedAt: Date;
+
+    @Expose()
+    status: UserStatus;
 }

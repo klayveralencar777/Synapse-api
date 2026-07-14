@@ -37,7 +37,7 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch('me')
+    @Patch('')
     update(
         @CurrentUser() user: JwtUser, 
         @Body() dto: UpdateUserDTO
@@ -53,6 +53,12 @@ export class UserController {
     ) {
         return this.service.changePassword(user.id, dto);
         
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/delete-my-account')
+    deleteMyAccount(@CurrentUser() user: JwtUser) {
+        return  this.service.deleteMyAccount(user.id);
     }
 
     @Delete(':id')

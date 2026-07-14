@@ -13,6 +13,7 @@ import { UserResponseDTO } from "./dto/response.dto";
 
 
 
+
 @Injectable()
 export class UserService {
     constructor(
@@ -46,10 +47,17 @@ export class UserService {
     }
 
     async save(dto: CreateUserDTO): Promise<UserResponseDTO> {
-        const user = await this.repository.findOne({ where: { email: dto.email } });
-        if (user) {
+        const isEmailExists = await this.repository.findOne({ where: { email: dto.email } });
+        if (isEmailExists) {
             throw new ConflictException("email já cadastrado");
         }
+        const isCpfExists = await this.repository.findOne({ where: {cpf: dto.cpf}});
+
+        if(isCpfExists) {
+            throw new ConflictException('cpf já cadastrado');
+        }
+
+        
         const hashPassword = await this.encryptPassword(dto.password);
         dto.password = hashPassword;
         const newUser = await this.repository.save(dto);
@@ -134,9 +142,6 @@ export class UserService {
             excludeExtraneousValues: true,
         });
     }
-
-
-
 
 
 }

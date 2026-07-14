@@ -9,4 +9,13 @@ export class UserResponseDTO {
 
     @Expose()
     email!: string;
+
+    @Expose()
+    cpf!: string;
+
+    @Expose()
+    createdAt!: Date;
+
+    @Expose()
+    updatedAt!: Date;
 }

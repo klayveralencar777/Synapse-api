@@ -1,11 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { LoginRequestDTO } from "./dto/login-request.dto";
 
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from 'bcrypt';
-import { Repository } from "typeorm";
-import { User } from "../User/entities/user.entity";
-import { InjectRepository } from "@nestjs/typeorm";
 import { UserService } from "../User/user.service";
 
 
@@ -44,4 +41,6 @@ export class AuthService {
 
         }
     }
-}
+
+
+    }

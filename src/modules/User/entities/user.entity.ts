@@ -9,8 +9,11 @@ import { UserStatus, UserType } from "../enums/user.enum";
         type: 'varchar',
         name: 'userType',
     },
-})
-export class User{
+}) 
+export abstract class User{
+
+    abstract get userType(): UserType;
+
     @PrimaryGeneratedColumn()
     id!: number;
 
@@ -33,11 +36,6 @@ export class User{
     status!: UserStatus;
 
 
-
-    @Column({ enum : UserType })
-    type !: UserType;
-
-  
     @CreateDateColumn()
     createdAt!: Date;
 

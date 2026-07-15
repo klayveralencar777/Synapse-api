@@ -27,9 +27,6 @@ export class CreateVeterinarianDTO {
     @IsString()
     address !: string;
 
-    @IsString()
-    type !: UserType;
-
 
 
 }

@@ -24,9 +24,6 @@ export class VeterinarianResponseDTO {
     address !: string;
 
     @Expose()
-    type !: UserType;
-
-    @Expose()
     createdAt!: Date;
 
     @Expose()

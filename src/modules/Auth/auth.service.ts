@@ -4,6 +4,7 @@ import { LoginRequestDTO } from "./dto/login-request.dto";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from 'bcrypt';
 import { UserService } from "../User/user.service";
+import { UserType } from "../User/enums/user.enum";
 
 
 @Injectable()
@@ -29,12 +30,12 @@ export class AuthService {
             sub: user.id,
             email: user.email,
             name: user.name,
-            type: user.type,
+            userType: user.userType,    
         }
         return {
             access_token: await this.jwtService.signAsync(payload),
             user: {
-                type: user.type,
+                userType: user.userType,
                 id: user.id,
                 name: user.name,
                 email: user.email,

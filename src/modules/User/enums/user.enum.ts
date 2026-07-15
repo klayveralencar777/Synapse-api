@@ -5,6 +5,6 @@ export enum UserStatus {
 
 
 export enum UserType {
-    PATIENT = 'patient',
+    GUARDIAN = 'guardian',
     VETERINARIAN = 'veterinarian',
 }

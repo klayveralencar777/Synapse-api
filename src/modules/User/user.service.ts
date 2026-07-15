@@ -1,9 +1,10 @@
 import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { ChangePasswordDTO } from "./dto/change-password.dto";
+import { UserStatus } from "./enums/user.enum";
 
 
 
@@ -18,7 +19,6 @@ export class UserService {
         const user = await this.repository.findOne({ where: { id } });
         if (!user) {
             throw new NotFoundException('usuário não encontrado');
-
         }
         return user;
 
@@ -35,8 +35,15 @@ export class UserService {
         
     }
 
+     async deleteMyAccount(id: number): Promise<User> {
+            const veterinarian = await this.findById(id);
+            veterinarian.status = UserStatus.INACTIVE;
+            return await this.repository.save(veterinarian);
+        }
+    
 
-    async changePassword(userId: number, dto: ChangePasswordDTO): Promise<void> {
+
+    async changePassword(userId: number, dto: ChangePasswordDTO): Promise<void> {      
         const user = await this.findById(userId);
         const isPasswordValid = await bcrypt.compare(dto.password, user.password);
         const isSamePassword = await bcrypt.compare(dto.newPassword, user.password);
@@ -48,8 +55,25 @@ export class UserService {
         }
         user.password = await bcrypt.hash(dto.newPassword, 10);
         await this.repository.save(user);
-
-
     }
+
+     async encryptPassword(password: string): Promise<string> {
+            return await bcrypt.hash(password, 10);
+    }
+
+
+      async ensureIsEmailAvailable(email: string, id?: number): Promise<void> {
+            const user = await this.repository.findOne({ where: { email } });
+            if (user && user.id !== id) {
+                throw new ConflictException('email já cadastrado');
+            }
+        }
+    
+        async ensureIsCpfAvailable(cpf: string, id?: number): Promise<void> {
+            const user = await this.repository.findOne({ where: { cpf } });
+            if (user && user.id !== id) {
+                throw new ConflictException('cpf já cadastrado');
+            }
+        }
 
 }

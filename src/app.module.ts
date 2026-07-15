@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/User/user.module';
 import { AuthModule } from './modules/Auth/auth.module';
 import { VeterinarianModule } from './modules/Veterinarian/veterinarian.module';
+import { GuardianModule } from './modules/Guardian/guardian.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { VeterinarianModule } from './modules/Veterinarian/veterinarian.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: false,
-    }), UserModule, AuthModule, VeterinarianModule
+    }), UserModule, AuthModule, VeterinarianModule, GuardianModule
   ]
  
 })

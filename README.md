@@ -31,6 +31,31 @@
 $ npm install
 ```
 
+## Database migrations
+
+This project uses TypeORM with PostgreSQL. Migrations are the source of truth for schema changes, so `synchronize` stays disabled in the app.
+
+Create or update the `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, and `DB_NAME` environment variables before running the commands below.
+
+```bash
+# create a new empty migration
+npm run migration:create -- src/database/migrations/CreateUsersTable
+
+# generate a migration from entity changes
+npm run migration:generate -- src/database/migrations/InitialSchema
+
+# apply pending migrations
+npm run migration:run
+
+# show pending migrations
+npm run migration:show
+
+# revert the last migration
+npm run migration:revert
+```
+
+When you add or change an entity, generate a new migration before deploying the change.
+
 ## Compile and run the project
 
 ```bash

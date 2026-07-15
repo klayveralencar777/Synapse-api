@@ -1,9 +1,15 @@
 
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UserStatus } from "../enums/user.enum";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, TableInheritance, UpdateDateColumn } from "typeorm";
+import { UserStatus, UserType } from "../enums/user.enum";
 
 
 @Entity('users')
+@TableInheritance({
+    column: {
+        type: 'varchar',
+        name: 'userType',
+    },
+})
 export class User{
     @PrimaryGeneratedColumn()
     id!: number;
@@ -24,7 +30,13 @@ export class User{
         enum : UserStatus, 
         default: UserStatus.ACTIVE
     })
-    status: UserStatus
+    status!: UserStatus;
+
+
+
+    @Column({ enum : UserType })
+    type !: UserType;
+
   
     @CreateDateColumn()
     createdAt!: Date;

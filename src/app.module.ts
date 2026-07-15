@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/User/user.module';
 import { AuthModule } from './modules/Auth/auth.module';
+import { VeterinarianModule } from './modules/Veterinarian/veterinarian.module';
 
 @Module({
   imports: [
@@ -16,8 +17,8 @@ import { AuthModule } from './modules/Auth/auth.module';
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
-    }), UserModule, AuthModule
+      synchronize: false,
+    }), UserModule, AuthModule, VeterinarianModule
   ]
  
 })

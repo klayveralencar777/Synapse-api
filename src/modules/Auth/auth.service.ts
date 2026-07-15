@@ -3,9 +3,6 @@ import { LoginRequestDTO } from "./dto/login-request.dto";
 
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from 'bcrypt';
-import { Repository } from "typeorm";
-import { User } from "../User/entities/user.entity";
-import { InjectRepository } from "@nestjs/typeorm";
 import { UserService } from "../User/user.service";
 
 
@@ -32,10 +29,12 @@ export class AuthService {
             sub: user.id,
             email: user.email,
             name: user.name,
+            type: user.type,
         }
         return {
             access_token: await this.jwtService.signAsync(payload),
             user: {
+                type: user.type,
                 id: user.id,
                 name: user.name,
                 email: user.email,

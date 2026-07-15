@@ -39,26 +39,21 @@ export class VeterinarianService {
             ...dto,
             password: await this.encryptPassword(dto.password),
         });
-
         const savedVeterinarian = await this.repository.save(newVeterinarian);
         return this.toResponse(savedVeterinarian);
     }
 
     async update(veterinarianId: number, dto: UpdateVeterinarianDTO): Promise<VeterinarianResponseDTO> {
         const veterinarian = await this.findEntityById(veterinarianId);
-
         if (dto.email) {
             await this.ensureIsEmailAvailable(dto.email, veterinarianId);
         }
-
         if (dto.cpf) {
             await this.ensureIsCpfAvailable(dto.cpf, veterinarianId);
         }
-
         if(dto.cnpj) {
             await this.ensureCnpjIsAvailable(dto.cnpj, veterinarian.id);
         }
-
         this.repository.merge(veterinarian, dto);
         const updatedVeterinarian = await this.repository.save(veterinarian);
         return this.toResponse(updatedVeterinarian);
@@ -68,15 +63,12 @@ export class VeterinarianService {
         const veterinarian = await this.findEntityById(veterinarianId);
         const isPasswordValid = await bcrypt.compare(dto.password, veterinarian.password);
         const isSamePassword = await bcrypt.compare(dto.newPassword, veterinarian.password);
-
         if (!isPasswordValid) {
             throw new UnauthorizedException('senha atual incorreta, tente novamente');
-        }
-
+         }
         if (isSamePassword) {
             throw new BadRequestException('a nova senha não pode ser igual a atual');
         }
-
         veterinarian.password = await this.encryptPassword(dto.newPassword);
         await this.repository.save(veterinarian);
     }

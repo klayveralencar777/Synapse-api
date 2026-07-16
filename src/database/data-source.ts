@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { User } from '../modules/User/entities/user.entity';
 import { Veterinarian } from '../modules/Veterinarian/entities/veterinarian.entity';
 import { Guardian } from '../modules/Guardian/entities/guardian.entity';
+import { Appointment } from '../modules/Appointment/entities/appointment.entity';
 
 const AppDataSource = new DataSource({
   type: 'postgres',
@@ -11,7 +12,7 @@ const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  entities: [User, Veterinarian, Guardian],
+  entities: [User, Veterinarian, Guardian, Appointment],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   synchronize: false,
 });

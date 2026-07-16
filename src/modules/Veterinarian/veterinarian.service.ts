@@ -62,7 +62,7 @@ export class VeterinarianService {
         await this.repository.delete(id);
     }
 
-    private async findEntityById(id: number): Promise<Veterinarian> {
+     async findEntityById(id: number): Promise<Veterinarian> {
         const veterinarian = await this.repository.findOne({ where: { id } });
         if (!veterinarian) {
             throw new NotFoundException('entidade não encontrada');

@@ -30,8 +30,6 @@ export class UserService {
             throw new NotFoundException('usuário não encontrado');
         }
         return user;
-
-
         
     }
 

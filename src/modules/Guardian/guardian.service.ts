@@ -37,7 +37,7 @@ export class GuardianService {
             ...dto, 
             password: await this.service.encryptPassword(dto.password),       
         });
-        return await this.repository.save(newUser);
+        return this.toResponse(await this.repository.save(newUser));
     }
 
     async update(id: number, dto: UpdateGuardianDTO) : Promise<GuardianResponseDTO> {
@@ -66,7 +66,7 @@ export class GuardianService {
              });
             }
 
-    private async findEntityById(id: number) : Promise<Guardian> {
+    async findEntityById(id: number) : Promise<Guardian> {
         const entity = await this.repository.findOne({ where: { id }});
         if(!entity) throw new NotFoundException('entidade não encontrada');
         return entity;

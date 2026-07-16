@@ -5,6 +5,7 @@ import { UserModule } from './modules/User/user.module';
 import { AuthModule } from './modules/Auth/auth.module';
 import { VeterinarianModule } from './modules/Veterinarian/veterinarian.module';
 import { GuardianModule } from './modules/Guardian/guardian.module';
+import { AppointmentModule } from './modules/Appointment/appointment.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { GuardianModule } from './modules/Guardian/guardian.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: false,
-    }), UserModule, AuthModule, VeterinarianModule, GuardianModule
+    }), UserModule, AuthModule, VeterinarianModule, GuardianModule, AppointmentModule
   ]
  
 })

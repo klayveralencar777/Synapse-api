@@ -28,6 +28,13 @@ export class AppointmentController {
         return this.service.findAll();
     }
 
+
+    @Get('me')
+    @UseGuards(JwtAuthGuard, UserTypeGuard)
+    findMyAppointments(@CurrentUser() user: JwtUser) {
+        return this.service.findMyAppointments(user.id);
+    }
+
     @Post()
     @UseGuards(JwtAuthGuard, UserTypeGuard)
     @UserTypes(UserType.GUARDIAN)

@@ -1,7 +1,7 @@
 
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { AppointmentService } from "./appointment.service";
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
 import { CreateAppointmentDTO } from "./dto/create-appointment.dto";
 import { UserType } from "../User/enums/user.enum";
 import { UserTypeGuard } from "src/common/guards/user-type.guard";
@@ -35,10 +35,19 @@ export class AppointmentController {
         return this.service.findMyAppointments(user.id);
     }
 
+    @Get(':id')
+    findById(@Param('id', ParseIntPipe) id: number) {
+        return this.service.findById(id);
+    }  
+
+
     @Post()
     @UseGuards(JwtAuthGuard, UserTypeGuard)
     @UserTypes(UserType.GUARDIAN)
     create(@CurrentUser() user: JwtUser, @Body() dto: CreateAppointmentDTO) {
         return this.service.save(user.id, dto);
     }
+
+
+
 }

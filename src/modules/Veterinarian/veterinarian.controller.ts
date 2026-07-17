@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
-import {  UserTypes } from "src/common/decorators/user-type.decorator";
-import {  UserTypeGuard } from "src/common/guards/user-type.guard";
+import { UserTypes } from "src/common/decorators/user-type.decorator";
+import { UserTypeGuard } from "src/common/guards/user-type.guard";
 import { JwtAuthGuard } from "../Auth/guards/jwt-auth.guard";
 import { CreateVeterinarianDTO } from "./dto/create-veterinarian.dto";
 import { UpdateVeterinarianDTO } from "./dto/update-veterinarian.dto";
@@ -9,6 +9,7 @@ import { VeterinarianService } from "./veterinarian.service";
 import { UserType } from "../User/enums/user.enum";
 import { UserService } from "../User/user.service";
 import { ChangePasswordDTO } from "../User/dto/change-password.dto";
+import { AppointmentService } from "../Appointment/appointment.service";
 
 interface JwtUser {
     id: number;
@@ -22,7 +23,8 @@ export class VeterinarianController {
     constructor(
         private readonly service: VeterinarianService,
         private readonly userService: UserService,
-    ) {}
+        private readonly appointment: AppointmentService
+    ) { }
 
     @Get()
     findAll() {
@@ -65,6 +67,17 @@ export class VeterinarianController {
     deleteMyAccount(@CurrentUser() user: JwtUser) {
         return this.userService.deleteMyAccount(user.id);
     }
+
+
+    @UseGuards(JwtAuthGuard, UserTypeGuard)
+    @UserTypes(UserType.GUARDIAN)
+    @Patch('cancel-my-appointment/:id')
+    cancelMyAppointment(@CurrentUser() user: JwtUser, @Param('id', ParseIntPipe) appointmentId: number) {
+        return this.appointment.cancelMyAppointment(user.id, appointmentId);
+
+    }
+
+  
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)

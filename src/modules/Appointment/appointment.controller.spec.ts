@@ -121,7 +121,7 @@ describe('AppointmentController', () => {
 
 
     const dto = {
-      scheduledAt: '2026-01-01T10:00:00.000Z',
+      scheduledAt: new Date('2026-01-01T10:00:00.000Z'),
       reason: 'Consulta',
       petInformation: 'Cachorro',
       veterinarianId: 5,
@@ -167,7 +167,7 @@ describe('AppointmentController', () => {
 
 
     const dto = {
-      scheduledAt: '2026-01-01T10:00:00.000Z',
+      scheduledAt:  new Date('2026-01-01T10:00:00.000Z'),
       reason: 'Consulta',
       petInformation: 'Cachorro',
       veterinarianId: 5,

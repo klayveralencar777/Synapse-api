@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
-import { IsDateString, IsInt, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsDateString, IsInt,  IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateAppointmentDTO {
     
 	@IsDateString()
-	scheduledAt!: string;
+	scheduledAt!: Date;
 
 	@IsString()
 	@MinLength(3)

@@ -187,7 +187,7 @@ describe('AppointmentService', () => {
     };
 
     const dto = {
-      scheduledAt: '2026-01-01T10:00:00.000Z',
+      scheduledAt: new Date("2026-07-20T15:30:00.000Z"),
       reason: 'Consulta',
       petInformation: 'Cachorro',
       veterinarianId: 22,

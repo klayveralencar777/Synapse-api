@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
 import { GuardianService } from "./guardian.service";
 import { CreateGuardianDTO } from "./dto/create-guardian.dto";
 import { UpdateGuardianDTO } from "./dto/update-guardian.dto";
@@ -9,6 +9,7 @@ import { UserTypeGuard } from "src/common/guards/user-type.guard";
 import { UserTypes } from "src/common/decorators/user-type.decorator";
 import { UserService } from "../User/user.service";
 import { ChangePasswordDTO } from "../User/dto/change-password.dto";
+import { AppointmentService } from "../Appointment/appointment.service";
 
 
 
@@ -24,7 +25,8 @@ interface JwtUser {
 export class GuardianController {
     constructor(
         private readonly service: GuardianService,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly appointment: AppointmentService,
     ) {}
 
     @Get()
@@ -57,6 +59,14 @@ export class GuardianController {
     @Patch('delete-my-account')
     deleteMyAccount(@CurrentUser() user: JwtUser) {
         return this.userService.deleteMyAccount(user.id);
+    }
+
+    @UseGuards(JwtAuthGuard, UserTypeGuard)
+    @UserTypes(UserType.GUARDIAN)
+    @Patch('cancel-my-appointment/:id')
+    cancelMyAppointment(@CurrentUser() user: JwtUser, @Param('id', ParseIntPipe) appointmentId: number) {
+        return this.appointment.cancelMyAppointment(user.id, appointmentId);
+
     }
 
     @Delete(':id')

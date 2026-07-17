@@ -7,11 +7,12 @@ import { VeterinarianService } from './veterinarian.service';
 import { UserService } from '../User/user.service';
 import { User } from '../User/entities/user.entity';
 import { UserModule } from '../User/user.module';
+import { AppointmentModule } from '../Appointment/appointment.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Veterinarian]),
-    UserModule
+    UserModule, AppointmentModule
   ],
   controllers: [VeterinarianController],
   providers: [VeterinarianService, UserTypeGuard],

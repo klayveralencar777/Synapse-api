@@ -16,7 +16,7 @@ export class UpdateVeterinarianDTO {
 
     @IsOptional()
     @IsString()
-    crmv !: string;
+    crmv ?: string;
 
     @IsOptional()
     @IsString()
@@ -25,6 +25,6 @@ export class UpdateVeterinarianDTO {
 
     @IsOptional()
     @IsString()
-    address !: string;
+    address ?: string;
 
 }

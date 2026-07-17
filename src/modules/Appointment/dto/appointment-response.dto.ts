@@ -17,12 +17,8 @@ export class AppointmentResponseDTO {
 	@Expose()
 	guardianId!: number;
 
-   
-
 	@Expose()
 	veterinarianId!: number;
-
-   
 
 	@Expose()
 	createdAt!: Date;

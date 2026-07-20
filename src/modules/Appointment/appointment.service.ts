@@ -6,10 +6,10 @@ import { CreateAppointmentDTO } from "./dto/create-appointment.dto";
 import { AppointmentResponseDTO } from "./dto/appointment-response.dto";
 import { GuardianService } from "../Guardian/guardian.service";
 import { VeterinarianService } from "../Veterinarian/veterinarian.service";
-import { plainToInstance } from "class-transformer";
 import { UserService } from "../User/user.service";
 import { UserType } from "../User/enums/user.enum";
 import { AppointmentStatus } from "./enums/appointment.enum";
+import { AppointmentMapper } from "./mapper/appointment.mapper";
 
 
 @Injectable()
@@ -20,34 +20,34 @@ export class AppointmentService {
         private readonly guardianService: GuardianService,
         private readonly veterinarianService: VeterinarianService,
         private readonly userService: UserService,
+        private readonly mapper : AppointmentMapper,
     ) { }
 
     async findAll(): Promise<AppointmentResponseDTO[]> {
         const appointments = await this.repository.find();
-        return this.toResponseList(appointments);
+        return this.mapper.toResponseList(appointments);
     }
 
     async findById(id: number): Promise<AppointmentResponseDTO> {
         const appointment = await this.findEntityById(id);
-        return this.toResponse(appointment);
+        return this.mapper.toResponse(appointment);
     }
 
     async findMyAppointments(userId: number): Promise<AppointmentResponseDTO[]> {
         const user = await this.userService.findById(userId);
         if (user.userType === UserType.GUARDIAN) {
             const guardianAppointments = await this.guardianAppointments(user.id);
-            return this.toResponseList(guardianAppointments);
+            return this.mapper.toResponseList(guardianAppointments);
         }
         if (user.userType === UserType.VETERINARIAN) {
             const veterinarianAppointments = await this.veterinarianAppointments(user.id);
-            return this.toResponseList(veterinarianAppointments);
+            return this.mapper.toResponseList(veterinarianAppointments);
         }
         throw new BadRequestException('tipo de usuário inválido');
     }
 
 
     async save(userId: number, dto: CreateAppointmentDTO): Promise<AppointmentResponseDTO> {
-        
         const guardian = await this.guardianService.findEntityById(userId);
         const veterinarian = await this.veterinarianService.findEntityById(dto.veterinarianId);
         const appointment = this.repository.create({
@@ -56,7 +56,7 @@ export class AppointmentService {
             veterinarian,
         });
         const newAppointment = await this.repository.save(appointment);
-        return this.toResponse(newAppointment);
+        return this.mapper.toResponse(newAppointment);
 
     }
 
@@ -133,16 +133,4 @@ export class AppointmentService {
         return appointments;
     }
 
-
-    private toResponse(appointment: Appointment): AppointmentResponseDTO {
-        return plainToInstance(AppointmentResponseDTO, appointment, {
-            excludeExtraneousValues: true,
-        });
-    }
-
-    private toResponseList(appointment: Appointment[]): AppointmentResponseDTO[] {
-        return plainToInstance(AppointmentResponseDTO, appointment, {
-            excludeExtraneousValues: true,
-        });
-    }
 }

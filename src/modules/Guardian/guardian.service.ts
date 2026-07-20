@@ -5,8 +5,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { GuardianResponseDTO } from "./dto/response.dto";
 import { UserService } from "../User/user.service";
 import { CreateGuardianDTO } from "./dto/create-guardian.dto";
-import { plainToInstance } from "class-transformer";
 import { UpdateGuardianDTO } from "./dto/update-guardian.dto";
+import { GuardianMapper } from "./mapper/guardian.mapper";
 
 
 @Injectable()
@@ -14,12 +14,13 @@ export class GuardianService {
     constructor( 
         @InjectRepository(Guardian)
         private readonly repository : Repository<Guardian>,
-        private readonly service: UserService
+        private readonly service: UserService,
+        private readonly mapper : GuardianMapper,
     ) {}
 
     async findAll() : Promise<GuardianResponseDTO[]>{
         const guardians = await this.repository.find();
-        return this.toResponseList(guardians);
+        return this.mapper.toResponseList(guardians);
     }
 
     async findById(id: number) : Promise<GuardianResponseDTO> {
@@ -27,7 +28,7 @@ export class GuardianService {
             where: { id }
         });
         if(!guardian) throw new NotFoundException('tutor não encontrado');
-        return this.toResponse(guardian);    
+        return this.mapper.toResponse(guardian);    
     }
 
     async save(dto: CreateGuardianDTO): Promise<GuardianResponseDTO> {
@@ -37,7 +38,7 @@ export class GuardianService {
             ...dto, 
             password: await this.service.encryptPassword(dto.password),       
         });
-        return this.toResponse(await this.repository.save(newUser));
+        return this.mapper.toResponse(await this.repository.save(newUser));
     }
 
     async update(id: number, dto: UpdateGuardianDTO) : Promise<GuardianResponseDTO> {
@@ -46,7 +47,7 @@ export class GuardianService {
         if(dto.cpf) await this.service.ensureIsCpfAvailable(dto.cpf, id);
         this.repository.merge(guardian, dto);
         const updatedGuardian = await this.repository.save(guardian);
-        return this.toResponse(updatedGuardian);
+        return this.mapper.toResponse(updatedGuardian);
     }
 
     async delete(id: number) : Promise<void> {
@@ -54,17 +55,6 @@ export class GuardianService {
         await this.repository.delete(id);
     }
 
-     private toResponse(guardian: Guardian): GuardianResponseDTO {
-            return plainToInstance(GuardianResponseDTO, guardian, {
-                excludeExtraneousValues: true,
-            });
-        }
-
-     private toResponseList(guardians: Guardian[]): GuardianResponseDTO[] {
-            return plainToInstance(GuardianResponseDTO, guardians, {
-                 excludeExtraneousValues: true,
-             });
-            }
 
     async findEntityById(id: number) : Promise<Guardian> {
         const entity = await this.repository.findOne({ where: { id }});

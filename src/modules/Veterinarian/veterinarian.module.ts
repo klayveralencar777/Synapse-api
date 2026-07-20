@@ -8,6 +8,7 @@ import { UserService } from '../User/user.service';
 import { User } from '../User/entities/user.entity';
 import { UserModule } from '../User/user.module';
 import { AppointmentModule } from '../Appointment/appointment.module';
+import { VeterinarianMapper } from './mapper/veterinarian.mapper';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { AppointmentModule } from '../Appointment/appointment.module';
     UserModule, AppointmentModule
   ],
   controllers: [VeterinarianController],
-  providers: [VeterinarianService, UserTypeGuard],
+  providers: [VeterinarianService, UserTypeGuard, VeterinarianMapper],
   exports: [VeterinarianService],
 })
 export class VeterinarianModule {}

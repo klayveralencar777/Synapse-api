@@ -7,6 +7,7 @@ import { GuardianController } from './guardian.controller';
 import { GuardianService } from './guardian.service';
 import { UserModule } from '../User/user.module';
 import { AppointmentModule } from '../Appointment/appointment.module';
+import { GuardianMapper } from './mapper/guardian.mapper';
 
 
 @Module({
@@ -15,7 +16,7 @@ import { AppointmentModule } from '../Appointment/appointment.module';
     UserModule, forwardRef(() => AppointmentModule)
   ],
   controllers: [GuardianController],
-  providers: [GuardianService, UserTypeGuard],
+  providers: [GuardianService, UserTypeGuard, GuardianMapper],
   exports: [GuardianService],
 })
 export class GuardianModule {}

@@ -8,6 +8,7 @@ import { GuardianModule } from '../Guardian/guardian.module';
 import { VeterinarianModule } from '../Veterinarian/veterinarian.module';
 
 import { UserModule } from '../User/user.module';
+import { AppointmentMapper } from './mapper/appointment.mapper';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Appointment]),
@@ -18,7 +19,7 @@ import { UserModule } from '../User/user.module';
         ],
     
     controllers: [AppointmentController],
-    providers: [AppointmentService, UserTypeGuard],
+    providers: [AppointmentService, UserTypeGuard, AppointmentMapper],
     exports: [AppointmentService],
 })
 export class AppointmentModule {}

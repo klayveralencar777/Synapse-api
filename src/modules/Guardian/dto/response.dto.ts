@@ -1,5 +1,5 @@
 import { Expose } from "class-transformer";
-import { UserStatus } from "../../User/enums/user.enum";
+import { UserStatus, UserType } from "../../User/enums/user.enum";
 
 export class GuardianResponseDTO {
 
@@ -26,5 +26,8 @@ export class GuardianResponseDTO {
     
         @Expose()
         status!: UserStatus;
+
+        @Expose()
+        userType !: UserType;
 
 }

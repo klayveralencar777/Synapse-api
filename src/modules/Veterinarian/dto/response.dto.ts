@@ -31,4 +31,7 @@ export class VeterinarianResponseDTO {
 
     @Expose()
     status!: UserStatus;
+
+    @Expose()
+    userType !: UserType;
 }

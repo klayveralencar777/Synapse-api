@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { AppointmentService } from '../Appointment/appointment.service';
 import { VeterinarianController } from './veterinarian.controller';
 import { VeterinarianService } from './veterinarian.service';
 import { UserService } from '../User/user.service';
@@ -20,6 +21,10 @@ describe('VeterinarianController', () => {
     deleteMyAccount: jest.Mock;
   };
 
+  let appointmentService: {
+    cancelMyAppointment: jest.Mock;
+  };
+
 
   beforeEach(async () => {
     veterinarianService = {
@@ -35,6 +40,10 @@ describe('VeterinarianController', () => {
       deleteMyAccount: jest.fn(),
     };
 
+    appointmentService = {
+      cancelMyAppointment: jest.fn(),
+    };
+
 
     const moduleRef = await Test.createTestingModule({
       controllers: [
@@ -48,6 +57,10 @@ describe('VeterinarianController', () => {
         {
           provide: UserService,
           useValue: userService,
+        },
+        {
+          provide: AppointmentService,
+          useValue: appointmentService,
         },
       ],
     }).compile();
@@ -264,6 +277,35 @@ describe('VeterinarianController', () => {
 
     expect(veterinarianService.delete)
       .toHaveBeenCalledWith(1);
+  });
+
+
+  it('should cancel guardian appointment', async () => {
+    const user = {
+      id: 1,
+      name: 'Dr João',
+      email: 'joao@email.com',
+      type: UserType.VETERINARIAN,
+    };
+
+
+    const response = {
+      message: 'Appointment cancelled',
+    };
+
+
+    appointmentService.cancelMyAppointment.mockResolvedValue(response);
+
+
+    const result = await controller.cancelMyAppointment(user, 10);
+
+
+    expect(appointmentService.cancelMyAppointment)
+      .toHaveBeenCalledWith(user.id, 10);
+
+
+    expect(result)
+      .toEqual(response);
   });
 
 });

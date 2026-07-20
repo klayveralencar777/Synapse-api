@@ -1,4 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { AppointmentService } from "./appointment.service";
@@ -14,6 +14,7 @@ describe('AppointmentService', () => {
 
   let repository: {
     find: jest.Mock;
+    findOne: jest.Mock;
     create: jest.Mock;
     save: jest.Mock;
   };
@@ -33,6 +34,7 @@ describe('AppointmentService', () => {
   beforeEach(async () => {
     repository = {
       find: jest.fn(),
+      findOne: jest.fn(),
       create: jest.fn(),
       save: jest.fn(),
     };
@@ -98,6 +100,42 @@ describe('AppointmentService', () => {
 
     expect(repository.find).toHaveBeenCalledWith();
     expect(result).toEqual(appointments);
+  });
+
+  it('returns an appointment by id', async () => {
+    const appointment = {
+      id: 1,
+      scheduledAt: new Date('2026-01-01T10:00:00.000Z'),
+      reason: 'Consulta',
+      status: AppointmentStatus.SCHEDULED,
+      guardianId: 11,
+      veterinarianId: 22,
+      createdAt: new Date('2026-01-01T09:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T09:30:00.000Z'),
+    } as Appointment;
+
+
+    repository.findOne.mockResolvedValue(appointment);
+
+
+    const result = await service.findById(1);
+
+
+    expect(repository.findOne).toHaveBeenCalledWith({
+      where: { id: 1 },
+    });
+
+
+    expect(result).toEqual(appointment);
+  });
+
+  it('throws when an appointment is not found by id', async () => {
+    repository.findOne.mockResolvedValue(null);
+
+
+    await expect(service.findById(1))
+      .rejects
+      .toBeInstanceOf(NotFoundException);
   });
 
   it('returns guardian appointments for guardian users', async () => {
@@ -247,6 +285,80 @@ describe('AppointmentService', () => {
       reason: 'Consulta',
       status: AppointmentStatus.SCHEDULED,
       veterinarianId: 22,
+    });
+  });
+
+  it('confirms a guardian appointment', async () => {
+    const user = {
+      id: 11,
+      userType: UserType.GUARDIAN,
+    };
+
+
+    const appointment = {
+      id: 1,
+      status: AppointmentStatus.SCHEDULED,
+    } as Appointment;
+
+
+    userService.findById.mockResolvedValue(user);
+    repository.findOne.mockResolvedValue(appointment);
+    repository.save.mockResolvedValue(appointment);
+
+
+    await expect(service.confirmAppointment(11, 1))
+      .resolves
+      .toBeUndefined();
+
+
+    expect(repository.findOne).toHaveBeenCalledWith({
+      where: {
+        id: 1,
+        guardian: { id: 11 },
+      },
+    });
+
+
+    expect(repository.save).toHaveBeenCalledWith({
+      ...appointment,
+      status: AppointmentStatus.CONFIRMED,
+    });
+  });
+
+  it('cancels a veterinarian appointment', async () => {
+    const user = {
+      id: 22,
+      userType: UserType.VETERINARIAN,
+    };
+
+
+    const appointment = {
+      id: 2,
+      status: AppointmentStatus.SCHEDULED,
+    } as Appointment;
+
+
+    userService.findById.mockResolvedValue(user);
+    repository.findOne.mockResolvedValue(appointment);
+    repository.save.mockResolvedValue(appointment);
+
+
+    await expect(service.cancelMyAppointment(22, 2))
+      .resolves
+      .toBeUndefined();
+
+
+    expect(repository.findOne).toHaveBeenCalledWith({
+      where: {
+        id: 2,
+        veterinarian: { id: 22 },
+      },
+    });
+
+
+    expect(repository.save).toHaveBeenCalledWith({
+      ...appointment,
+      status: AppointmentStatus.CANCELLED,
     });
   });
 });

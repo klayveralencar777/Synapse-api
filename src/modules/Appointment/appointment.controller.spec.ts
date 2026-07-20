@@ -8,6 +8,7 @@ describe('AppointmentController', () => {
 
   let appointmentService: {
     findAll: jest.Mock;
+    findById: jest.Mock;
     findMyAppointments: jest.Mock;
     save: jest.Mock;
   };
@@ -16,6 +17,7 @@ describe('AppointmentController', () => {
   beforeEach(async () => {
     appointmentService = {
       findAll: jest.fn(),
+      findById: jest.fn(),
       findMyAppointments: jest.fn(),
       save: jest.fn(),
     };
@@ -73,6 +75,28 @@ describe('AppointmentController', () => {
 
     expect(result)
       .toEqual(appointments);
+  });
+
+
+  it('should return appointment by id', async () => {
+    const appointment = {
+      id: 1,
+      reason: 'Consulta',
+    };
+
+
+    appointmentService.findById.mockResolvedValue(appointment);
+
+
+    const result = await controller.findById(1);
+
+
+    expect(appointmentService.findById)
+      .toHaveBeenCalledWith(1);
+
+
+    expect(result)
+      .toEqual(appointment);
   });
 
 

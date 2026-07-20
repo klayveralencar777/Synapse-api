@@ -56,14 +56,14 @@ export class GuardianController {
     
     @UseGuards(JwtAuthGuard, UserTypeGuard)
     @UserTypes(UserType.GUARDIAN)
-    @Patch('delete-my-account')
+    @Patch('delete-account')
     deleteMyAccount(@CurrentUser() user: JwtUser) {
         return this.userService.deleteMyAccount(user.id);
     }
 
     @UseGuards(JwtAuthGuard, UserTypeGuard)
     @UserTypes(UserType.GUARDIAN)
-    @Patch('cancel-my-appointment/:id')
+    @Patch('cancel-appointment/:id')
     cancelMyAppointment(@CurrentUser() user: JwtUser, @Param('id', ParseIntPipe) appointmentId: number) {
         return this.appointment.cancelMyAppointment(user.id, appointmentId);
 

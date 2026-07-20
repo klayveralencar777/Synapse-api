@@ -67,11 +67,19 @@ export class VeterinarianController {
     deleteMyAccount(@CurrentUser() user: JwtUser) {
         return this.userService.deleteMyAccount(user.id);
     }
+    
 
 
     @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.GUARDIAN)
-    @Patch('cancel-my-appointment/:id')
+    @UserTypes(UserType.VETERINARIAN)
+    @Patch('confirm-appointment/:id')
+    confirMyAppointment() {}
+
+
+
+    @UseGuards(JwtAuthGuard, UserTypeGuard)
+    @UserTypes(UserType.VETERINARIAN)
+    @Patch('cancel-appointment/:id')
     cancelMyAppointment(@CurrentUser() user: JwtUser, @Param('id', ParseIntPipe) appointmentId: number) {
         return this.appointment.cancelMyAppointment(user.id, appointmentId);
 

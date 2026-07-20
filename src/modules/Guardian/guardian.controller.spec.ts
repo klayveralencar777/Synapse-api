@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { AppointmentService } from '../Appointment/appointment.service';
 import { GuardianController } from './guardian.controller';
 import { GuardianService } from './guardian.service';
 import { UserService } from '../User/user.service';
@@ -19,6 +20,10 @@ describe('GuardianController', () => {
     deleteMyAccount: jest.Mock;
   };
 
+  let appointmentService: {
+    cancelMyAppointment: jest.Mock;
+  };
+
 
   beforeEach(async () => {
     guardianService = {
@@ -31,6 +36,10 @@ describe('GuardianController', () => {
     userService = {
       changePassword: jest.fn(),
       deleteMyAccount: jest.fn(),
+    };
+
+    appointmentService = {
+      cancelMyAppointment: jest.fn(),
     };
 
 
@@ -46,6 +55,10 @@ describe('GuardianController', () => {
         {
           provide: UserService,
           useValue: userService,
+        },
+        {
+          provide: AppointmentService,
+          useValue: appointmentService,
         },
       ],
     }).compile();
@@ -242,6 +255,35 @@ describe('GuardianController', () => {
 
     expect(guardianService.delete)
       .toHaveBeenCalledWith(1);
+  });
+
+
+  it('should cancel logged guardian appointment', async () => {
+    const user = {
+      id: 1,
+      name: 'Maria Silva',
+      email: 'maria@email.com',
+      type: UserType.GUARDIAN,
+    };
+
+
+    const response = {
+      message: 'Appointment cancelled',
+    };
+
+
+    appointmentService.cancelMyAppointment.mockResolvedValue(response);
+
+
+    const result = await controller.cancelMyAppointment(user, 10);
+
+
+    expect(appointmentService.cancelMyAppointment)
+      .toHaveBeenCalledWith(user.id, 10);
+
+
+    expect(result)
+      .toEqual(response);
   });
 
 });

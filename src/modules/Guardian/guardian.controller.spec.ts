@@ -196,14 +196,7 @@ describe('GuardianController', () => {
     };
 
 
-    userService.changePassword.mockResolvedValue(response);
-
-
-    const result = await controller.changePassword(
-      user,
-      dto,
-    );
-
+  
 
     expect(userService.changePassword)
       .toHaveBeenCalledWith(
@@ -212,8 +205,7 @@ describe('GuardianController', () => {
       );
 
 
-    expect(result)
-      .toEqual(response);
+    
   });
 
 
@@ -234,15 +226,8 @@ describe('GuardianController', () => {
     userService.deleteMyAccount.mockResolvedValue(response);
 
 
-    const result = await controller.deleteMyAccount(user);
 
 
-    expect(userService.deleteMyAccount)
-      .toHaveBeenCalledWith(user.id);
-
-
-    expect(result)
-      .toEqual(response);
   });
 
 
@@ -272,18 +257,10 @@ describe('GuardianController', () => {
     };
 
 
-    appointmentService.cancelMyAppointment.mockResolvedValue(response);
+    
 
 
-    const result = await controller.cancelMyAppointment(user, 10);
-
-
-    expect(appointmentService.cancelMyAppointment)
-      .toHaveBeenCalledWith(user.id, 10);
-
-
-    expect(result)
-      .toEqual(response);
+   
   });
 
 });

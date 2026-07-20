@@ -1,7 +1,16 @@
 
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { AppointmentService } from "./appointment.service";
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    UseGuards
+} from "@nestjs/common";
 import { CreateAppointmentDTO } from "./dto/create-appointment.dto";
 import { UserType } from "../User/enums/user.enum";
 import { UserTypeGuard } from "src/common/guards/user-type.guard";
@@ -21,7 +30,7 @@ interface JwtUser {
 export class AppointmentController {
     constructor(
         private readonly service: AppointmentService
-    ) {}
+    ) { }
 
     @Get()
     findAll() {
@@ -38,7 +47,7 @@ export class AppointmentController {
     @Get(':id')
     findById(@Param('id', ParseIntPipe) id: number) {
         return this.service.findById(id);
-    }  
+    }
 
 
     @Post()
@@ -46,6 +55,27 @@ export class AppointmentController {
     @UserTypes(UserType.GUARDIAN)
     create(@CurrentUser() user: JwtUser, @Body() dto: CreateAppointmentDTO) {
         return this.service.save(user.id, dto);
+    }
+
+
+    @UseGuards(JwtAuthGuard, UserTypeGuard)
+    @UserTypes(UserType.VETERINARIAN)
+    @Patch('confirm-appointment/:id')
+    confirmMyAppointment(
+        @CurrentUser() user: JwtUser,
+        @Param('id', ParseIntPipe) appointmentId : number
+    ) {
+        return this.service.confirmAppointment(user.id, appointmentId);
+    }
+
+    @UseGuards(JwtAuthGuard, UserTypeGuard)
+    @Patch('cancel-appointment/:id')
+    cancelMyAppointment(
+        @CurrentUser() user: JwtUser, 
+        @Param('id', ParseIntPipe) appointmentId: number
+    ) {
+        return this.service.cancelMyAppointment(user.id, appointmentId);
+
     }
 
 

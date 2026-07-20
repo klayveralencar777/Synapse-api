@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException
+} from "@nestjs/common";
+
 import { Not, Repository } from "typeorm";
 import { Appointment } from "./entities/appointment.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -14,13 +20,14 @@ import { AppointmentMapper } from "./mapper/appointment.mapper";
 
 @Injectable()
 export class AppointmentService {
+
     constructor(
         @InjectRepository(Appointment)
         private readonly repository: Repository<Appointment>,
         private readonly guardianService: GuardianService,
         private readonly veterinarianService: VeterinarianService,
         private readonly userService: UserService,
-        private readonly mapper : AppointmentMapper,
+        private readonly mapper: AppointmentMapper,
     ) { }
 
     async findAll(): Promise<AppointmentResponseDTO[]> {
@@ -48,6 +55,8 @@ export class AppointmentService {
 
 
     async save(userId: number, dto: CreateAppointmentDTO): Promise<AppointmentResponseDTO> {
+        const scheduledAt = new Date(dto.scheduledAt);
+        await this.ensureAppointmentIsAvailable(dto.veterinarianId, scheduledAt);
         const guardian = await this.guardianService.findEntityById(userId);
         const veterinarian = await this.veterinarianService.findEntityById(dto.veterinarianId);
         const appointment = this.repository.create({
@@ -61,10 +70,14 @@ export class AppointmentService {
     }
 
     async confirmAppointment(userId: number, appointmentId: number): Promise<void> {
+        const user = await this.userService.findById(userId);
+        if(user.userType !== UserType.VETERINARIAN) {
+            throw new BadRequestException('tipo de usuario invalido');
+        }
         const appointment = await this.findAppointmentOfEntityById(userId, appointmentId);
         appointment.status = AppointmentStatus.CONFIRMED;
         await this.repository.save(appointment);
-        
+
     }
 
 
@@ -84,7 +97,7 @@ export class AppointmentService {
     private async findAppointmentOfEntityById(userId: number, appointmentId: number): Promise<Appointment> {
         const user = await this.userService.findById(userId);
         const where =
-             user.userType === UserType.GUARDIAN
+            user.userType === UserType.GUARDIAN
                 ? {
                     id: appointmentId,
                     guardian: { id: userId },
@@ -96,23 +109,23 @@ export class AppointmentService {
                     }
                     : null;
 
-            if (!where) {
-                throw new BadRequestException(
-                    'Tipo de usuário inválido',
-                );
-            }
+        if (!where) {
+            throw new BadRequestException(
+                'Tipo de usuário inválido',
+            );
+        }
 
-            const appointment = await this.repository.findOne({
-                where,
-            });
+        const appointment = await this.repository.findOne({
+            where,
+        });
 
-            if (!appointment) {
-                throw new NotFoundException(
-                    'Consulta não encontrada',
-                );
-            }
+        if (!appointment) {
+            throw new NotFoundException(
+                'Consulta não encontrada',
+            );
+        }
 
-            return appointment;
+        return appointment;
     }
 
     private async guardianAppointments(userId: number): Promise<Appointment[]> {
@@ -131,6 +144,78 @@ export class AppointmentService {
             }
         });
         return appointments;
+    }
+
+
+    private async ensureAppointmentIsAvailable(
+        veterinarianId: number,
+        scheduledAt: Date
+    ): Promise<void> {
+        const appointmentDurationInMinutes = 30;
+        const appointmentDurationInMilliseconds =
+            appointmentDurationInMinutes * 60 * 1000;
+
+        if (Number.isNaN(scheduledAt.getTime())) {
+            throw new BadRequestException(
+                "Data do agendamento inválida.",
+            );
+        }
+
+        if (scheduledAt <= new Date()) {
+            throw new BadRequestException(
+                "A consulta deve ser agendada para uma data futura.",
+            );
+        }
+
+        const conflictRangeStart = new Date(
+            scheduledAt.getTime() -
+            appointmentDurationInMilliseconds,
+        );
+
+        const conflictRangeEnd = new Date(
+            scheduledAt.getTime() +
+            appointmentDurationInMilliseconds,
+        );
+
+        const conflictingAppointment = await this.repository
+            .createQueryBuilder("appointment")
+            .innerJoin(
+                "appointment.veterinarian",
+                "veterinarian",
+            )
+            .where(
+                "veterinarian.id = :veterinarianId",
+                {
+                    veterinarianId,
+                },
+            )
+            .andWhere(
+                "appointment.status != :cancelledStatus",
+                {
+                    cancelledStatus: AppointmentStatus.CANCELLED,
+                },
+            )
+            .andWhere(
+                "appointment.scheduledAt > :conflictRangeStart",
+                {
+                    conflictRangeStart,
+                },
+            )
+            .andWhere(
+                "appointment.scheduledAt < :conflictRangeEnd",
+                {
+                    conflictRangeEnd,
+                },
+            )
+            .getOne();
+
+        if (conflictingAppointment) {
+            throw new ConflictException(
+                "O veterinário já possui uma consulta nesse horário.",
+            );
+        }
+
+
     }
 
 }

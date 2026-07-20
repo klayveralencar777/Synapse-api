@@ -15,6 +15,7 @@ export class UserService {
         private readonly repository: Repository<User>
     ) { }
 
+
     async findById(id: number): Promise<User> {
         const user = await this.repository.findOne({ where: { id } });
         if (!user || NaN) {

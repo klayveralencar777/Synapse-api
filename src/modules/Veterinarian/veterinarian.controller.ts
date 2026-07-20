@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { 
+    Body, 
+    Controller, 
+    Delete, 
+    Get, 
+    HttpCode, 
+    HttpStatus, 
+    Param, 
+    ParseIntPipe, 
+    Patch, 
+    Post, 
+    UseGuards 
+} from "@nestjs/common";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { UserTypes } from "src/common/decorators/user-type.decorator";
 import { UserTypeGuard } from "src/common/guards/user-type.guard";
@@ -22,8 +34,6 @@ interface JwtUser {
 export class VeterinarianController {
     constructor(
         private readonly service: VeterinarianService,
-        private readonly userService: UserService,
-        private readonly appointment: AppointmentService
     ) { }
 
     @Get()
@@ -51,42 +61,8 @@ export class VeterinarianController {
         return this.service.update(user.id, dto);
     }
 
-    @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.VETERINARIAN)
-    @Patch('change-password')
-    changePassword(
-        @CurrentUser() user: JwtUser,
-        @Body() dto: ChangePasswordDTO,
-    ) {
-        return this.userService.changePassword(user.id, dto);
-    }
 
-    @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.VETERINARIAN)
-    @Patch('delete-my-account')
-    deleteMyAccount(@CurrentUser() user: JwtUser) {
-        return this.userService.deleteMyAccount(user.id);
-    }
     
-
-
-    @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.VETERINARIAN)
-    @Patch('confirm-appointment/:id')
-    confirMyAppointment() {}
-
-
-
-    @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.VETERINARIAN)
-    @Patch('cancel-appointment/:id')
-    cancelMyAppointment(@CurrentUser() user: JwtUser, @Param('id', ParseIntPipe) appointmentId: number) {
-        return this.appointment.cancelMyAppointment(user.id, appointmentId);
-
-    }
-
-  
-
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     delete(@Param('id') id: number) {

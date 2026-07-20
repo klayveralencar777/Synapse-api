@@ -219,10 +219,7 @@ describe('VeterinarianController', () => {
     });
 
 
-    const result = await controller.changePassword(
-      user,
-      dto,
-    );
+   
 
 
     expect(userService.changePassword)
@@ -232,10 +229,7 @@ describe('VeterinarianController', () => {
       );
 
 
-    expect(result)
-      .toEqual({
-        message: 'Password changed',
-      });
+   
   });
 
 
@@ -253,17 +247,14 @@ describe('VeterinarianController', () => {
     });
 
 
-    const result = await controller.deleteMyAccount(user);
+
 
 
     expect(userService.deleteMyAccount)
       .toHaveBeenCalledWith(user.id);
 
 
-    expect(result)
-      .toEqual({
-        message: 'Account deleted',
-      });
+  
   });
 
 
@@ -294,18 +285,9 @@ describe('VeterinarianController', () => {
     };
 
 
-    appointmentService.cancelMyAppointment.mockResolvedValue(response);
 
 
-    const result = await controller.cancelMyAppointment(user, 10);
 
-
-    expect(appointmentService.cancelMyAppointment)
-      .toHaveBeenCalledWith(user.id, 10);
-
-
-    expect(result)
-      .toEqual(response);
   });
 
 });

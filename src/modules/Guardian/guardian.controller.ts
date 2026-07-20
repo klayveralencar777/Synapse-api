@@ -46,28 +46,6 @@ export class GuardianController {
         return this.service.update(user.id, dto);
     }  
 
-    @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.GUARDIAN)
-    @Patch('change-password')
-    changePassword(@CurrentUser() user: JwtUser, @Body() dto: ChangePasswordDTO) {
-        return this.userService.changePassword(user.id, dto);
-    }
-
-    
-    @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.GUARDIAN)
-    @Patch('delete-account')
-    deleteMyAccount(@CurrentUser() user: JwtUser) {
-        return this.userService.deleteMyAccount(user.id);
-    }
-
-    @UseGuards(JwtAuthGuard, UserTypeGuard)
-    @UserTypes(UserType.GUARDIAN)
-    @Patch('cancel-appointment/:id')
-    cancelMyAppointment(@CurrentUser() user: JwtUser, @Param('id', ParseIntPipe) appointmentId: number) {
-        return this.appointment.cancelMyAppointment(user.id, appointmentId);
-
-    }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
